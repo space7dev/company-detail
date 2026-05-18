@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
 const contentTabs = ["Trust score", "Customer Reviews", "Company Information", "Reviews"];
 
 const breakdownRows = [
@@ -165,6 +169,8 @@ const reviewFilters = [
   { label: "1  Reviews", showIcon: true },
 ];
 
+const sortOptions = ["Newest", "Oldest", "Highest Budget", "Lowest Budget", "Highest Rating", "Lowest Rating"];
+
 const reviewMetricRows = [
   [
     { label: "Pricing accuracy", rating: 4, striped: false },
@@ -229,6 +235,81 @@ const recentReviews = [
 ];
 
 const paginationItems = ["1", "2", "3", "...", "8", "9", "10"];
+
+const shareOptions = [
+  { label: "Linkedin" },
+  { label: "Facebook" },
+  { label: "X" },
+  { label: "Telegram" },
+  { label: "Whatsapp" },
+  { label: "Email" },
+];
+
+function ShareOptionIcon({ label }: { label: string }) {
+  if (label === "Linkedin") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10.4854 6.29736C10.9671 6.10842 11.5304 6.04363 12.0586 6.1333C12.5828 6.22233 13.0494 6.45872 13.3848 6.84814C13.7161 7.23312 13.9677 7.82389 13.9678 8.71338V13.3003H12.7344V9.62061C12.7344 8.81345 12.4907 8.14233 12.0459 7.67139C11.602 7.20155 11.0062 6.98444 10.4189 7.00537C9.21955 7.04832 8.1543 8.05242 8.1543 9.62061V13.3003H6.92773V6.35303H8.16406L8.1543 6.75732L9.46777 7.10986C9.64663 6.7834 9.99972 6.48789 10.4854 6.29736ZM3.96777 6.35303V13.3003H2.70117V6.35303H3.96777ZM3.29492 2.69971C3.46274 2.69988 3.62356 2.76654 3.74219 2.88525C3.8609 3.00409 3.92782 3.16553 3.92773 3.3335C3.92756 3.50124 3.8608 3.66215 3.74219 3.78076C3.62335 3.89948 3.46192 3.96639 3.29395 3.96631C3.12616 3.96622 2.96535 3.89935 2.84668 3.78076C2.72797 3.66193 2.66105 3.50049 2.66113 3.33252C2.66122 3.16466 2.72799 3.00394 2.84668 2.88525C2.96551 2.76654 3.12695 2.69962 3.29492 2.69971Z" fill="black" stroke="#30CB65" strokeWidth="1.4" />
+      </svg>
+    );
+  }
+
+  if (label === "Facebook") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M9.76172 2.03369C10.2049 2.0337 10.6331 2.0507 10.9658 2.0708V2.96729H10.666C9.91437 2.96729 9.28087 3.14766 8.91895 3.68506C8.75345 3.93082 8.68798 4.19336 8.65918 4.41064C8.63124 4.62186 8.63281 4.83914 8.63281 5.00049V7.03369H10.7695L10.4531 8.30029H8.63281V13.9673H7.36621V8.30029H5.36621V7.03369H7.36621V4.46729C7.36621 3.60509 7.63502 3.01597 8.02148 2.64209C8.41214 2.26423 8.99809 2.03369 9.76172 2.03369Z" fill="black" stroke="#30CB65" strokeWidth="1.4" />
+      </svg>
+    );
+  }
+
+  if (label === "X") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M8.3032 5.92812L13.4029 0H12.1943L7.76639 5.14719L4.22964 0H0.150391L5.49861 7.78356L0.150391 14H1.35898L6.0352 8.56439L9.77014 14H13.8494L8.30288 5.92812H8.3032ZM6.64792 7.85203L6.10597 7.077L1.79441 0.909781H3.65072L7.13005 5.887L7.67189 6.66203L12.1949 13.1316H10.3388L6.64792 7.85236V7.85203Z" fill="#30CB65" />
+      </svg>
+    );
+  }
+
+  if (label === "Telegram") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10.4854 6.29736C10.9671 6.10842 11.5304 6.04363 12.0586 6.1333C12.5828 6.22233 13.0494 6.45872 13.3848 6.84814C13.7161 7.23312 13.9677 7.82389 13.9678 8.71338V13.3003H12.7344V9.62061C12.7344 8.81345 12.4907 8.14233 12.0459 7.67139C11.602 7.20155 11.0062 6.98444 10.4189 7.00537C9.21955 7.04832 8.1543 8.05242 8.1543 9.62061V13.3003H6.92773V6.35303H8.16406L8.1543 6.75732L9.46777 7.10986C9.64663 6.7834 9.99972 6.48789 10.4854 6.29736ZM3.96777 6.35303V13.3003H2.70117V6.35303H3.96777ZM3.29492 2.69971C3.46274 2.69988 3.62356 2.76654 3.74219 2.88525C3.8609 3.00409 3.92782 3.16553 3.92773 3.3335C3.92756 3.50124 3.8608 3.66215 3.74219 3.78076C3.62335 3.89948 3.46192 3.96639 3.29395 3.96631C3.12616 3.96622 2.96535 3.89935 2.84668 3.78076C2.72797 3.66193 2.66105 3.50049 2.66113 3.33252C2.66122 3.16466 2.72799 3.00394 2.84668 2.88525C2.96551 2.76654 3.12695 2.69962 3.29492 2.69971Z" fill="black" stroke="#30CB65" strokeWidth="1.4" />
+      </svg>
+    );
+  }
+
+  if (label === "Whatsapp") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <mask id="path-1-inside-1_1532_29856" fill="white">
+          <path d="M9.33718 1.02246C12.8267 1.69353 15.1979 4.71632 15.0786 8.30952C14.9689 11.6231 12.2884 14.5117 8.91217 14.9255C7.55627 15.0967 6.17974 14.8741 4.9469 14.2843C4.74976 14.1985 4.53058 14.1771 4.32057 14.2231C3.30949 14.4655 2.30662 14.7406 1.30076 15.0023C1.19041 15.0306 1.07707 15.05 0.916016 15.0836C1.218 13.9786 1.49985 12.9183 1.80108 11.8625C1.87788 11.5955 1.85626 11.3823 1.73323 11.1206C0.558858 8.62641 0.661009 6.17925 2.26114 3.91775C3.86499 1.64954 6.12873 0.681705 8.91217 0.965045C9.04341 0.977721 9.17389 0.996361 9.33718 1.02246ZM13.7469 9.22739C13.9467 8.41018 13.9705 7.58178 13.7752 6.7683C13.1876 4.31666 11.6621 2.72772 9.18209 2.22516C6.7491 1.73305 4.70606 2.55324 3.26476 4.56496C1.82121 6.57965 1.7899 8.7405 2.98142 10.9051C3.13427 11.1832 3.17528 11.4121 3.08208 11.7089C2.91207 12.2517 2.7801 12.8064 2.61382 13.4223C3.30353 13.2434 3.90824 13.0719 4.52115 12.9377C4.69488 12.8996 4.9223 12.9198 5.07441 13.0033C8.57589 14.9307 12.738 13.1524 13.7469 9.22739Z" />
+        </mask>
+        <path d="M9.33718 1.02246C12.8267 1.69353 15.1979 4.71632 15.0786 8.30952C14.9689 11.6231 12.2884 14.5117 8.91217 14.9255C7.55627 15.0967 6.17974 14.8741 4.9469 14.2843C4.74976 14.1985 4.53058 14.1771 4.32057 14.2231C3.30949 14.4655 2.30662 14.7406 1.30076 15.0023C1.19041 15.0306 1.07707 15.05 0.916016 15.0836C1.218 13.9786 1.49985 12.9183 1.80108 11.8625C1.87788 11.5955 1.85626 11.3823 1.73323 11.1206C0.558858 8.62641 0.661009 6.17925 2.26114 3.91775C3.86499 1.64954 6.12873 0.681705 8.91217 0.965045C9.04341 0.977721 9.17389 0.996361 9.33718 1.02246ZM13.7469 9.22739C13.9467 8.41018 13.9705 7.58178 13.7752 6.7683C13.1876 4.31666 11.6621 2.72772 9.18209 2.22516C6.7491 1.73305 4.70606 2.55324 3.26476 4.56496C1.82121 6.57965 1.7899 8.7405 2.98142 10.9051C3.13427 11.1832 3.17528 11.4121 3.08208 11.7089C2.91207 12.2517 2.7801 12.8064 2.61382 13.4223C3.30353 13.2434 3.90824 13.0719 4.52115 12.9377C4.69488 12.8996 4.9223 12.9198 5.07441 13.0033C8.57589 14.9307 12.738 13.1524 13.7469 9.22739Z" fill="#30CB65" />
+        <path d="M6.31891 5.13544C6.45238 5.45382 6.5426 5.76177 6.69918 6.03243C6.92287 6.41867 6.85502 6.74302 6.54633 7.01518C6.21452 7.30746 6.26374 7.55576 6.50159 7.89129C7.04963 8.66377 7.73785 9.24312 8.60651 9.62265C8.84511 9.72704 9.0263 9.74494 9.18065 9.50559C9.24477 9.40716 9.33425 9.32664 9.40881 9.23418C9.84351 8.69285 9.70706 8.69732 10.396 8.99632C10.613 9.09102 10.83 9.19168 11.0306 9.31545C11.2319 9.43848 11.5376 9.56524 11.5764 9.74046C11.6643 10.1282 11.5406 10.5219 11.217 10.8097C10.6205 11.3406 9.93448 11.4286 9.18512 11.2213C7.56412 10.7739 6.31742 9.8016 5.36227 8.45499C5.02524 7.98002 4.72401 7.45286 4.53461 6.90557C4.30496 6.23897 4.46751 5.59624 4.94173 5.03179C5.22134 4.69999 5.5606 4.62543 5.92969 4.71416C6.07807 4.74995 6.18172 4.97065 6.31891 5.13544Z" fill="#30CB65" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <g clipPath="url(#clip0_1532_29859)">
+        <path d="M14.6673 6.66683C14.6673 6.24683 14.4673 5.8535 14.134 5.60016L8.80065 1.60016C8.56986 1.42707 8.28914 1.3335 8.00065 1.3335C7.71216 1.3335 7.43145 1.42707 7.20065 1.60016L1.86732 5.60016C1.70172 5.72436 1.56732 5.8854 1.47475 6.07054C1.38218 6.25568 1.33398 6.45984 1.33398 6.66683M14.6673 6.66683V13.3335C14.6673 13.6871 14.5268 14.0263 14.2768 14.2763C14.0267 14.5264 13.6876 14.6668 13.334 14.6668H2.66732C2.3137 14.6668 1.97456 14.5264 1.72451 14.2763C1.47446 14.0263 1.33398 13.6871 1.33398 13.3335V6.66683M14.6673 6.66683L8.68732 10.4668C8.4815 10.5958 8.24353 10.6642 8.00065 10.6642C7.75777 10.6642 7.5198 10.5958 7.31398 10.4668L1.33398 6.66683" stroke="#30CB65" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+      <defs>
+        <clipPath id="clip0_1532_29859">
+          <rect width="16" height="16" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
+type MediaKind = "image" | "video";
+
+type ActiveMedia = {
+  items: string[];
+  selectedIndex: number;
+} | null;
 
 const quickFacts = [
   { label: "Status", value: "Active · Authorized", valueClassName: "text-green-600" },
@@ -312,7 +393,13 @@ function RatingBar({
   );
 }
 
-function ReviewActionBar({ usefulActive = false }: { usefulActive?: boolean }) {
+function ReviewActionBar({
+  usefulActive = false,
+  onShare,
+}: {
+  usefulActive?: boolean;
+  onShare: () => void;
+}) {
   const usefulWrapperClass = usefulActive
     ? "size- px-1.5 py-0.5 bg-emerald-50 rounded-xs flex justify-start items-center gap-2"
     : "size- px-1.5 py-0.5 flex justify-start items-center gap-2";
@@ -330,10 +417,14 @@ function ReviewActionBar({ usefulActive = false }: { usefulActive?: boolean }) {
           <div className={usefulTextClass}>Useful</div>
         </div>
         <div className="size-1 bg-stone-300 rounded-full" />
-        <div className="size- px-1.5 py-0.5 flex justify-start items-center gap-2">
+        <button
+          type="button"
+          onClick={onShare}
+          className="size- px-1.5 py-0.5 flex justify-start items-center gap-2"
+        >
           <DecorativeImage className="size-4" src="/images/share-2.svg" alt="Share" />
           <div className="justify-center text-neutral-500 text-xs font-semibold font-['Rethink_Sans'] leading-5">Share</div>
-        </div>
+        </button>
       </div>
       <DecorativeImage className="size-4" src="/images/flag.svg" alt="Flag" />
     </div>
@@ -601,15 +692,34 @@ function ReviewMetricsGrid() {
   );
 }
 
-function ReviewMediaStrip({ media }: { media: string[] }) {
+function ReviewMediaStrip({
+  media,
+  onOpenMedia,
+}: {
+  media: string[];
+  onOpenMedia: (items: string[], selectedIndex: number) => void;
+}) {
   return (
     <div className="self-stretch relative inline-flex justify-start items-center gap-2.5">
-      {media.map((src) => (
-        <DecorativeImage key={src} className="size-16 rounded-sm object-cover" src={src} alt="" />
+      {media.map((src, index) => (
+        <button
+          key={`${src}-${index}`}
+          type="button"
+          className="size-16 rounded-sm"
+          onClick={() => onOpenMedia(media, index)}
+          aria-label="Open media preview"
+        >
+          <DecorativeImage className="size-16 rounded-sm object-cover" src={src} alt="" />
+        </button>
       ))}
-      <div className="size-7 px-2 py-0.5 left-[18px] top-[18px] absolute bg-black/50 rounded-[32px] flex justify-center items-center gap-1.5">
+      <button
+        type="button"
+        className="size-7 px-2 py-0.5 left-[18px] top-[18px] absolute bg-black/50 rounded-[32px] flex justify-center items-center gap-1.5"
+        onClick={() => onOpenMedia(media, 0)}
+        aria-label="Play media"
+      >
         <DecorativeImage className="size-3.5" src="/images/play.svg" alt="Play" />
-      </div>
+      </button>
       {Array.from({ length: Math.max(0, 5 - media.length) }, (_, index) => (
         <div key={index} className="size-16 opacity-0 bg-zinc-300 rounded-sm" />
       ))}
@@ -617,7 +727,15 @@ function ReviewMediaStrip({ media }: { media: string[] }) {
   );
 }
 
-function ReviewCard({ review }: { review: (typeof recentReviews)[number] }) {
+function ReviewCard({
+  review,
+  onOpenMedia,
+  onOpenShare,
+}: {
+  review: (typeof recentReviews)[number];
+  onOpenMedia: (items: string[], selectedIndex: number) => void;
+  onOpenShare: () => void;
+}) {
   return (
     <div className="self-stretch px-6 py-5 bg-white outline outline-1 outline-offset-[-1px] outline-neutral-100 flex flex-col justify-start items-start gap-4">
       <div className="self-stretch pr-[0.01px] inline-flex justify-between items-start">
@@ -658,8 +776,8 @@ function ReviewCard({ review }: { review: (typeof recentReviews)[number] }) {
       <div className="self-stretch justify-center text-neutral-700 text-xs font-normal font-['Open_Sans'] leading-4">
         {review.text}
       </div>
-      <ReviewMediaStrip media={review.media} />
-      <ReviewActionBar usefulActive={review.usefulActive} />
+      <ReviewMediaStrip media={review.media} onOpenMedia={onOpenMedia} />
+      <ReviewActionBar usefulActive={review.usefulActive} onShare={onOpenShare} />
     </div>
   );
 }
@@ -701,8 +819,71 @@ function CompareCompanyCard({ name }: { name: string }) {
 }
 
 export function ContentSection() {
+  const [activeMedia, setActiveMedia] = useState<ActiveMedia>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [selectedSort, setSelectedSort] = useState(sortOptions[0]);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!activeMedia) {
+      return;
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setActiveMedia(null);
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [activeMedia]);
+
+  useEffect(() => {
+    if (!isSortOpen) {
+      return;
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      if (!sortDropdownRef.current?.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, [isSortOpen]);
+
+  useEffect(() => {
+    if (!isShareModalOpen) {
+      return;
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsShareModalOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isShareModalOpen]);
+
+  function inferMediaKind(src: string): MediaKind {
+    return /\.(mp4|webm|ogg|mov)$/i.test(src) ? "video" : "image";
+  }
+
+  function openMediaModal(items: string[], selectedIndex: number) {
+    setActiveMedia({ items, selectedIndex });
+  }
+
+  const currentMediaSrc = activeMedia ? activeMedia.items[activeMedia.selectedIndex] : "";
+  const currentMediaKind = currentMediaSrc ? inferMediaKind(currentMediaSrc) : null;
+
   return (
-    <div className="w-[1166px] left-[100px] top-[567px] absolute z-20 inline-flex justify-start items-start gap-12">
+    <>
+      <div className="w-[1166px] left-[100px] top-[567px] absolute z-20 inline-flex justify-start items-start gap-12">
       <div className="w-[712px] rounded-sm inline-flex flex-col justify-start items-start gap-5 overflow-hidden">
         <div className="self-stretch px-6 bg-white outline outline-1 outline-offset-[-1px] outline-neutral-200 inline-flex justify-start items-start gap-5">
           {contentTabs.map((tab, index) => (
@@ -1011,14 +1192,51 @@ export function ContentSection() {
                 Last 30 days · 8 reviews
               </div>
             </div>
-            <div data-show-error-message="false" data-show-hint="false" data-show-label="false" data-show-leading-icon="false" data-show-left-prefix="true" data-show-mandatory="false" data-show-right-prefix="false" data-show-trailing-icon="true" data-state="Default" className="w-52 h-11 min-h-11 inline-flex flex-col justify-start items-start gap-1.5">
-              <div className="self-stretch flex-1 min-h-11 px-3 py-2.5 bg-white rounded-md outline outline-1 outline-offset-[-1px] outline-neutral-200 inline-flex justify-start items-center gap-2 overflow-hidden">
-                <div className="justify-start text-gray-500 text-sm font-normal font-['Lato'] leading-5">Sort by</div>
-                <div className="flex-1 justify-start text-stone-950 text-sm font-normal font-['Open_Sans'] leading-5">Newest</div>
-                <div className="size-4 relative bg-white overflow-hidden">
-                  <div className="w-2 h-1 left-[4px] top-[6px] absolute outline outline-[1.40px] outline-offset-[-0.70px] outline-neutral-500" />
+            <div ref={sortDropdownRef} className="relative w-52 min-h-11">
+              <button
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={isSortOpen}
+                onClick={() => setIsSortOpen((current) => !current)}
+                className="flex h-11 w-full items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 py-2.5"
+              >
+                <span className="text-sm leading-5 text-gray-500">Sort by</span>
+                <span className="flex-1 text-left text-sm leading-5 text-stone-950">{selectedSort}</span>
+                <DecorativeImage
+                  className={`size-4 transition-transform ${isSortOpen ? "rotate-180" : ""}`}
+                  src="/images/chevron-down.svg"
+                  alt=""
+                />
+              </button>
+
+              {isSortOpen ? (
+                <div className="absolute left-0 top-[48px] z-40 w-full overflow-hidden rounded-md border border-neutral-200 bg-white shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
+                  {sortOptions.map((option, index) => {
+                    const isSelected = option === selectedSort;
+
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        role="option"
+                        aria-selected={isSelected}
+                        onClick={() => {
+                          setSelectedSort(option);
+                          setIsSortOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between px-3 py-3 text-left ${
+                          index !== sortOptions.length - 1 ? "border-b border-neutral-200" : ""
+                        } ${isSelected ? "bg-emerald-50" : "bg-white hover:bg-emerald-50"}`}
+                      >
+                        <span className="text-sm leading-5 text-stone-950">{option}</span>
+                        <span className={`text-green-600 text-sm font-semibold ${isSelected ? "opacity-100" : "opacity-0"}`}>
+                          ✓
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
-              </div>
+              ) : null}
             </div>
             <div data-leading-icon="true" data-state="Default" data-trailing-icon="false" data-variant="Primary" className="self-stretch px-5 py-2.5 bg-green-500 rounded-xs flex justify-center items-center gap-2">
               <div className="justify-start text-neutral-50 text-xs font-bold font-['Rethink_Sans'] leading-4">
@@ -1045,7 +1263,12 @@ export function ContentSection() {
           </div>
           <div className="self-stretch flex flex-col justify-start items-start">
             {recentReviews.map((review, index) => (
-              <ReviewCard key={`${review.name}-${index}`} review={review} />
+              <ReviewCard
+                key={`${review.name}-${index}`}
+                review={review}
+                onOpenMedia={openMediaModal}
+                onOpenShare={() => setIsShareModalOpen(true)}
+              />
             ))}
           </div>
           <div className="self-stretch p-5 border-t border-gray-200 relative z-30 flex items-center justify-between gap-4">
@@ -1077,7 +1300,8 @@ export function ContentSection() {
         </div>
       </div>
 
-      <div className="w-[406px] inline-flex flex-col justify-start items-start gap-5">
+      <div className="w-[406px] self-start">
+        <div className="sticky top-6 flex flex-col gap-5">
         <div className="self-stretch bg-white rounded-md outline outline-1 outline-offset-[-1px] outline-neutral-200 flex flex-col justify-start items-start">
           <div className="self-stretch px-5 py-4 outline outline-1 outline-offset-[-1px] outline-neutral-200 inline-flex justify-start items-center gap-3">
             <DecorativeImage className="size-16 rounded-md object-cover" src="/images/background.png" alt="Rimberio Auto Transport" />
@@ -1215,7 +1439,126 @@ export function ContentSection() {
             </div>
           </div>
         </div>
+        </div>
       </div>
     </div>
+
+      {activeMedia ? (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgba(0,0,0,0.72)] px-4 backdrop-blur-[4px]"
+          onClick={() => setActiveMedia(null)}
+        >
+          <div className="relative w-[865px]" onClick={(event) => event.stopPropagation()}>
+            <div className="relative h-[649px] w-[865px] overflow-hidden rounded-[4px]">
+              {currentMediaKind === "image" ? (
+                <div
+                  className="h-full w-full"
+                  style={{
+                    background: `url(${currentMediaSrc}) lightgray 50% / cover no-repeat`,
+                  }}
+                />
+              ) : (
+                <video className="h-full w-full bg-black object-cover" src={currentMediaSrc} controls autoPlay />
+              )}
+            </div>
+
+            <div className="mt-0.5 flex w-[865px] items-center gap-2 border-t border-white/10 bg-black/65 px-3 py-3">
+              {activeMedia.items.map((item, index) => {
+                const selected = index === activeMedia.selectedIndex;
+                const kind = inferMediaKind(item);
+
+                return (
+                  <button
+                    key={`${item}-${index}`}
+                    type="button"
+                    onClick={() => setActiveMedia({ ...activeMedia, selectedIndex: index })}
+                    aria-label="Select media"
+                    className={`relative h-16 w-16 aspect-square overflow-hidden rounded-[4px] bg-neutral-300 ${selected ? "border-2 border-[#26A251]" : "opacity-40"}`}
+                  >
+                    <img
+                      src={item}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    {kind === "video" ? (
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/35">
+                        <img className="size-4" src="/images/play.svg" alt="" />
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              className="absolute right-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-sm font-semibold text-white"
+              onClick={() => setActiveMedia(null)}
+              aria-label="Close media preview"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {isShareModalOpen ? (
+        <div
+          className="fixed inset-0 z-[130] flex items-center justify-center bg-[rgba(0,0,0,0.72)] px-4 backdrop-blur-[4px]"
+          onClick={() => setIsShareModalOpen(false)}
+        >
+          <div
+            className="w-[430px] overflow-hidden rounded-[8px] border border-neutral-200 bg-white"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+              <div className="text-[16px] text-xl font-semibold leading-6 text-stone-950">Share</div>
+              <button
+                type="button"
+                className="flex h-6 w-6 aspect-square items-center justify-center rounded-full hover:bg-neutral-100"
+                onClick={() => setIsShareModalOpen(false)}
+                aria-label="Close share modal"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M18 6L6 18M6 6L18 18"
+                    stroke="#BDBDBD"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-5">
+              <div className="grid grid-cols-3 overflow-hidden rounded-sm border border-neutral-200">
+                {shareOptions.map((option, index) => {
+                  const selected = option.label === "Facebook";
+
+                  return (
+                    <button
+                      key={option.label}
+                      type="button"
+                      className={`flex items-center justify-between px-3 py-3 text-left ${
+                        index < 3 ? "border-b border-neutral-200" : ""
+                      } ${index % 3 !== 2 ? "border-r border-neutral-200" : ""} ${
+                        selected ? "bg-emerald-50" : "bg-white hover:bg-emerald-50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-4 w-4 shrink-0 aspect-square items-center justify-center">
+                          <ShareOptionIcon label={option.label} />
+                        </div>
+                        <span className="text-sm leading-5 text-stone-950">{option.label}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

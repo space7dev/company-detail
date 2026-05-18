@@ -5,7 +5,7 @@ import { NewsletterFooterSection } from "./components/detail-company/newsletter-
 
 export function DetailCompanyPage() {
   return (
-    <div className="relative min-h-[7476px] w-full min-w-[1366px] overflow-x-hidden overflow-y-visible bg-neutral-50">
+    <div className="relative min-h-[7476px] w-full min-w-[1366px] overflow-visible bg-neutral-50">
       <HeroSection />
       <ContentSection />
       <NewsletterFooterSection />
